@@ -3,7 +3,7 @@ from urllib.request import Request, urlopen
 from pprint import pprint
 import random 
 from string import Template
-
+import pickle
 
 def scrape_phyorg():
     link1 = "https://phys.org/tags/computer+science/"
@@ -94,9 +94,23 @@ if __name__=="__main__":
     scitech_title_desc_dict,scitech_title_href_dict = scrape_scitech()
     master_title_sdec_dict,master_title_href_dict = create_master_record(phyorg_title_desc_dict,techxplore_title_desc_dict,scitech_title_desc_dict,phyorg_title_href_dict,techxplore_title_href_dict,scitech_title_href_dict)
     master_title_ls = list(master_title_sdec_dict.keys())
+    
+    # with open("template/prev_records.pkl",'rb') as fp:
+    #     prev_records = pickle.load(fp)
+    
+    prev_records = []
+    master_title_ls = set(master_title_ls)-set(prev_records)
+    master_title_ls = list(master_title_ls)
+        
     rand_10_titles = random.choices(master_title_ls,k=10)
     pprint(rand_10_titles)
-    with open(F'template/div.html','r+',encoding='utf-8') as f:
+    
+    new_prev_records = prev_records + rand_10_titles
+    
+    with open("template/prev_records.pkl",'wb') as fp:
+        pickle.dump(new_prev_records, fp)
+    
+    with open('template/div.html','r+',encoding='utf-8') as f:
         html_body = f.readlines()
     master_html_body = ""
     html_body = ' '.join([str(char) for char in html_body])
@@ -105,21 +119,21 @@ if __name__=="__main__":
         t_html_body = t_html_body.substitute(No=str(i+1),Heading=j,Body=master_title_sdec_dict[j],ArticleLink=master_title_href_dict[j])
         master_html_body+=t_html_body
     
-    with open(F'template/fdiv.html','w',encoding='utf-8') as f:
+    with open('template/fdiv.html','w',encoding='utf-8') as f:
         f.writelines(master_html_body)
         
     with open(F'template/fdiv.html','r+',encoding='utf-8') as f:
         fdiv = f.readlines()
     fdiv = ' '.join([str(char) for char in fdiv])
         
-    with open(F'template/formatted.html','r+',encoding='utf-8') as f:
+    with open('template/formatted.html','r+',encoding='utf-8') as f:
         formatted = f.readlines()
     formatted = ' '.join([str(char) for char in formatted])
     
     master_html_body = Template(formatted)
-    master_html_body = master_html_body.substitute(Sasi=fdiv)
+    master_html_body = master_html_body.substitute(Sasi=fdiv,Name='Sasi Vatsal')
     
-    with open(F'master_body.html','w',encoding='utf-8') as f:
+    with open('master_body.html','w',encoding='utf-8') as f:
         f.writelines(master_html_body)
         
     
