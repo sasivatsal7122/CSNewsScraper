@@ -131,7 +131,7 @@ if __name__=="__main__":
     formatted = ' '.join([str(char) for char in formatted])
     
     master_html_body = Template(formatted)
-    master_html_body = master_html_body.substitute(Sasi=fdiv,Name='Sasi Vatsal')
+    master_html_body = master_html_body.substitute(Sasi=fdiv,Name='There')
     
     with open('master_body.html','w',encoding='utf-8') as f:
         f.writelines(master_html_body)
